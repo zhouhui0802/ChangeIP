@@ -53,6 +53,10 @@ public class ChangeIP {
         });
 
 
+        JButton changeIP=new JButton("一键更改");
+        changeIP.setEnabled(false);
+
+
         JLabel pastLabel=new JLabel("输入原电脑IP");
         panel1.add(pastLabel);
 
@@ -79,6 +83,8 @@ public class ChangeIP {
                                 // System.out.println(line);
                                 confirmButton.setText("原IP存在");
                                 confirmButton.setEnabled(false);
+
+                                changeIP.setEnabled(true);
                                 continue;
                             }else{
                                 JOptionPane.showMessageDialog(null,"输入IP地址不存在，请重新输入","标题",JOptionPane.ERROR_MESSAGE);
@@ -109,7 +115,7 @@ public class ChangeIP {
 
         panel1.add(combo);
 
-        JButton changeIP=new JButton("一键更改");
+
         panel1.add(changeIP);
         changeIP.addActionListener(new ActionListener() {
 
