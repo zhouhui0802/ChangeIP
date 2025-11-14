@@ -24,9 +24,9 @@ public class ChangeIP {
 
         JComboBox combo=new JComboBox();
         combo.addItem("更改文件如下");
-        combo.addItem("test_fusion.json");
-        combo.addItem("CH4_server.json");
-        combo.addItem("test_grpc.json");
+        combo.addItem("test_fusion_seat.json");
+        combo.addItem("CH_server4.json");
+        combo.addItem("test_rpc_LoadDataClient.json");
 
         JLabel ipLabel=new JLabel("当前电脑IP地址");
         panel1.add(ipLabel);
@@ -72,12 +72,19 @@ public class ChangeIP {
                 BufferedReader br=null;
                 try{
                     //修改为绝对路径或者相对路径
-                    br=new BufferedReader(new FileReader("D:\\test.txt"));
+                    // 文件地址，不管绝对相对，直接从根路径开始找，一直到jar包路径
+                    String root=System.getProperty("user.dir");
+                    // System.out.println(root);
+                    String readFilePath=root+"\\bin\\conf\\test_fusion_seat.json";
+                    System.out.println(readFilePath);
+                    br=new BufferedReader(new FileReader(readFilePath));
+
                     String line;
                     //System.out.println("数值是："+pastField.getText());
                     if(pastField.getText().equals("")){
                         JOptionPane.showMessageDialog(null,"输入IP地址为空","标题",JOptionPane.ERROR_MESSAGE);
                     }else{
+                        int temp=0;
                         while((line=br.readLine())!=null){
                             if(line.contains(pastField.getText())){
                                 // System.out.println(line);
@@ -85,10 +92,13 @@ public class ChangeIP {
                                 confirmButton.setEnabled(false);
 
                                 changeIP.setEnabled(true);
-                                continue;
-                            }else{
-                                JOptionPane.showMessageDialog(null,"输入IP地址不存在，请重新输入","标题",JOptionPane.ERROR_MESSAGE);
+                                temp=1;
+                                break;
                             }
+                        }
+
+                        if(temp==0){
+                            JOptionPane.showMessageDialog(null,"输入IP地址不存在，请重新输入","标题",JOptionPane.ERROR_MESSAGE);
                         }
 
                     }
@@ -128,7 +138,11 @@ public class ChangeIP {
                 BufferedWriter writer=null;
                 try{
                     //修改为绝对路径或者相对路径
-                    br=new BufferedReader(new FileReader("D:\\test.txt"));
+                    // 文件地址，不管绝对相对，直接从根路径开始找，一直到jar包路径
+                    String root=System.getProperty("user.dir");
+                    String readFilePath=root+"\\bin\\conf\\test_fusion_seat.json";
+                    String writePath=readFilePath;
+                    br=new BufferedReader(new FileReader(readFilePath));
 
                     String line;
                     StringBuilder content=new StringBuilder();
@@ -138,13 +152,67 @@ public class ChangeIP {
                         content.append(line).append(System.lineSeparator());
                     }
                     br.close();
-                    writer=new BufferedWriter(new FileWriter("D:\\test.txt"));
+                    writer=new BufferedWriter(new FileWriter(writePath));
                     writer.write(content.toString());
                     writer.close();
 
                 }catch(IOException exception){
                     exception.printStackTrace();
                 }
+
+
+                //第二个文件修改
+                try{
+                    //修改为绝对路径或者相对路径
+                    // 文件地址，不管绝对相对，直接从根路径开始找，一直到jar包路径
+                    String root=System.getProperty("user.dir");
+                    String readFilePath=root+"\\bin\\conf\\CH_server4.json";
+                    String writePath=readFilePath;
+                    br=new BufferedReader(new FileReader(readFilePath));
+
+                    String line;
+                    StringBuilder content=new StringBuilder();
+                    while((line=br.readLine())!=null){
+
+                        line=line.replace(pastField.getText(),ipField.getText().trim());
+                        content.append(line).append(System.lineSeparator());
+                    }
+                    br.close();
+                    writer=new BufferedWriter(new FileWriter(writePath));
+                    writer.write(content.toString());
+                    writer.close();
+
+                }catch(IOException exception){
+                    exception.printStackTrace();
+                }
+
+                // 第三个文件修改
+                try{
+                    //修改为绝对路径或者相对路径
+                    // 文件地址，不管绝对相对，直接从根路径开始找，一直到jar包路径
+                    String root=System.getProperty("user.dir");
+                    String readFilePath=root+"\\bin\\conf\\test_rpc_LoadDataClient.json";
+                    String writePath=readFilePath;
+                    br=new BufferedReader(new FileReader(readFilePath));
+
+                    String line;
+                    StringBuilder content=new StringBuilder();
+                    while((line=br.readLine())!=null){
+
+                        line=line.replace(pastField.getText(),ipField.getText().trim());
+                        content.append(line).append(System.lineSeparator());
+                    }
+                    br.close();
+                    writer=new BufferedWriter(new FileWriter(writePath));
+                    writer.write(content.toString());
+                    writer.close();
+
+                }catch(IOException exception){
+                    exception.printStackTrace();
+                }
+
+
+
 
                 changeIP.setText("IP地址切换成功");
                 changeIP.setEnabled(false);
