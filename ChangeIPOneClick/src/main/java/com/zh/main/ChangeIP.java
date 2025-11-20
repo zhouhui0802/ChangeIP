@@ -10,17 +10,18 @@ import java.net.Inet4Address;
 public class ChangeIP {
     public static void main(String[] args) {
 
-        JFrame frame=new JFrame("IP地址修改");
 
         //开头的标题
+        JFrame frame=new JFrame("IP地址修改");
+
+        //小程序的北部标题
         Panel panel=new Panel();
         panel.add(new JLabel("一键更改配置IP地址"));
-
         frame.add(panel,BorderLayout.NORTH);
 
-        //专门放置  用户操作按钮
+        //专门放置  用户操作按钮  小程序的中部按钮
         Panel panel1=new Panel();
-        panel1.setLayout(new GridLayout(3,3,2,2));
+        panel1.setLayout(new GridLayout(4,3,2,2));
 
         JComboBox combo=new JComboBox();
         combo.addItem("更改文件如下");
@@ -52,7 +53,7 @@ public class ChangeIP {
             }
         });
 
-
+        // 输入原来的IP地址
         JButton changeIP=new JButton("一键更改");
         changeIP.setEnabled(false);
 
@@ -103,7 +104,6 @@ public class ChangeIP {
 
                     }
 
-
                 }catch(IOException exception){
                     exception.printStackTrace();
                 }finally {
@@ -119,13 +119,10 @@ public class ChangeIP {
             }
         });
 
-
+        //显示修改IP地址的文件列表
         JLabel showFile=new JLabel("更改文件列表");
         panel1.add(showFile);
-
         panel1.add(combo);
-
-
         panel1.add(changeIP);
         changeIP.addActionListener(new ActionListener() {
 
@@ -133,85 +130,16 @@ public class ChangeIP {
             public void actionPerformed(ActionEvent e) {
 
                 //调用文件
+                //不管绝对或者相对，都从放置的文件夹中找
+                String root=System.getProperty("user.dir");
+                String readAndWriteFilePath=root+"\\bin\\conf\\test_fusion_seat.json";
+                readAndWriteFile(readAndWriteFilePath,pastField.getText(),ipField.getText().trim());
 
-                BufferedReader br=null;
-                BufferedWriter writer=null;
-                try{
-                    //修改为绝对路径或者相对路径
-                    // 文件地址，不管绝对相对，直接从根路径开始找，一直到jar包路径
-                    String root=System.getProperty("user.dir");
-                    String readFilePath=root+"\\bin\\conf\\test_fusion_seat.json";
-                    String writePath=readFilePath;
-                    br=new BufferedReader(new FileReader(readFilePath));
+                readAndWriteFilePath=root+"\\bin\\conf\\CH_server4.json";
+                readAndWriteFile(readAndWriteFilePath,pastField.getText(),ipField.getText().trim());
 
-                    String line;
-                    StringBuilder content=new StringBuilder();
-                    while((line=br.readLine())!=null){
-
-                        line=line.replace(pastField.getText(),ipField.getText().trim());
-                        content.append(line).append(System.lineSeparator());
-                    }
-                    br.close();
-                    writer=new BufferedWriter(new FileWriter(writePath));
-                    writer.write(content.toString());
-                    writer.close();
-
-                }catch(IOException exception){
-                    exception.printStackTrace();
-                }
-
-
-                //第二个文件修改
-                try{
-                    //修改为绝对路径或者相对路径
-                    // 文件地址，不管绝对相对，直接从根路径开始找，一直到jar包路径
-                    String root=System.getProperty("user.dir");
-                    String readFilePath=root+"\\bin\\conf\\CH_server4.json";
-                    String writePath=readFilePath;
-                    br=new BufferedReader(new FileReader(readFilePath));
-
-                    String line;
-                    StringBuilder content=new StringBuilder();
-                    while((line=br.readLine())!=null){
-
-                        line=line.replace(pastField.getText(),ipField.getText().trim());
-                        content.append(line).append(System.lineSeparator());
-                    }
-                    br.close();
-                    writer=new BufferedWriter(new FileWriter(writePath));
-                    writer.write(content.toString());
-                    writer.close();
-
-                }catch(IOException exception){
-                    exception.printStackTrace();
-                }
-
-                // 第三个文件修改
-                try{
-                    //修改为绝对路径或者相对路径
-                    // 文件地址，不管绝对相对，直接从根路径开始找，一直到jar包路径
-                    String root=System.getProperty("user.dir");
-                    String readFilePath=root+"\\bin\\conf\\test_rpc_LoadDataClient.json";
-                    String writePath=readFilePath;
-                    br=new BufferedReader(new FileReader(readFilePath));
-
-                    String line;
-                    StringBuilder content=new StringBuilder();
-                    while((line=br.readLine())!=null){
-
-                        line=line.replace(pastField.getText(),ipField.getText().trim());
-                        content.append(line).append(System.lineSeparator());
-                    }
-                    br.close();
-                    writer=new BufferedWriter(new FileWriter(writePath));
-                    writer.write(content.toString());
-                    writer.close();
-
-                }catch(IOException exception){
-                    exception.printStackTrace();
-                }
-
-
+                readAndWriteFilePath=root+"\\bin\\conf\\test_rpc_LoadDataClient.json";
+                readAndWriteFile(readAndWriteFilePath,pastField.getText(),ipField.getText().trim());
 
 
                 changeIP.setText("IP地址切换成功");
@@ -219,24 +147,61 @@ public class ChangeIP {
             }
         });
 
+        JLabel showNeedFile=new JLabel("需要修改的文件");
+        JButton modifyNeedFile=new JButton("寻找该文件");
+
+        modifyNeedFile.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new ShowChooserFile();
+            }
+        });
+        JButton startModify=new JButton("开始修改文件");
+        panel1.add(showNeedFile);
+        panel1.add(modifyNeedFile);
+        panel1.add(startModify);
+
+
         frame.add(panel1,BorderLayout.CENTER);
 
+        // 加入南部按钮
         Panel panel2=new Panel();
         panel2.setLayout(new GridLayout(1,2,2,2));
         panel2.add(new JButton("确定"));
         panel2.add(new JButton("取消"));
-
+        //关闭小程序窗口
         frame.add(panel2,BorderLayout.SOUTH);
-
-        frame.setBounds(100,100,400,160);
+        frame.setBounds(100,100,400,180);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
     }
 
-    public static void changeIpFile(String path,String oldText,String newTest){
+    public static void readAndWriteFile(String fileName,String oldText,String newText){
+        BufferedReader br=null;
+        BufferedWriter writer=null;
+        try{
+            br=new BufferedReader(new FileReader(fileName));
 
+            String line;
+            StringBuilder content=new StringBuilder();
+            while((line=br.readLine())!=null){
+
+                line=line.replace(oldText,newText);
+                content.append(line).append(System.lineSeparator());
+            }
+            br.close();
+            writer=new BufferedWriter(new FileWriter(fileName));
+            writer.write(content.toString());
+            writer.close();
+
+        }catch(IOException exception){
+            exception.printStackTrace();
+        }
     }
+
+
 }
 
 //ip:127.0.0.1
