@@ -8,7 +8,13 @@ import java.io.*;
 import java.net.Inet4Address;
 
 public class ChangeIP {
+
+    public static String timeStamp;
+    public static JButton dateOK;
+    static CalendarShow cs;
+    public static boolean isLive=true;
     public static void main(String[] args) {
+
 
 
         //开头的标题
@@ -21,7 +27,7 @@ public class ChangeIP {
 
         //专门放置  用户操作按钮  小程序的中部按钮
         Panel panel1=new Panel();
-        panel1.setLayout(new GridLayout(4,3,2,2));
+        panel1.setLayout(new GridLayout(5,3,2,2));
 
         JComboBox combo=new JComboBox();
         combo.addItem("更改文件如下");
@@ -147,6 +153,8 @@ public class ChangeIP {
             }
         });
 
+
+        //寻找需要修改的文件
         JLabel showNeedFile=new JLabel("需要修改的文件");
         JButton modifyNeedFile=new JButton("寻找该文件");
 
@@ -162,6 +170,35 @@ public class ChangeIP {
         panel1.add(modifyNeedFile);
         panel1.add(startModify);
 
+        //清楚软件的缓存
+        JLabel cacheLabel=new JLabel("清理软件缓存");
+        dateOK=new JButton("确认时间");
+        JButton cacheButton=new JButton("确认清除");
+        panel1.add(cacheLabel);
+        panel1.add(dateOK);
+        dataRefresh datarefresh;
+        dateOK.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                    cs=new CalendarShow();
+                    isLive=true;
+                    dataRefresh datarefresh=new dataRefresh(cs);
+                    datarefresh.start();
+
+            }
+        });
+        panel1.add(cacheButton);
+        cacheButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //System.out.println("aaaaa");
+                cs.dispose();
+                isLive=false;
+            }
+        });
 
         frame.add(panel1,BorderLayout.CENTER);
 
@@ -170,9 +207,17 @@ public class ChangeIP {
         panel2.setLayout(new GridLayout(1,2,2,2));
         panel2.add(new JButton("确定"));
         panel2.add(new JButton("取消"));
+
+        // 设置窗口为居中
+        frame.setSize(400,200);
+        Dimension screenSize=Toolkit.getDefaultToolkit().getScreenSize();
+        int x=(int)(screenSize.getWidth()/2-frame.getWidth()/2);
+        int y=(int)(screenSize.getHeight()/2-frame.getHeight()/2);
+
         //关闭小程序窗口
+
         frame.add(panel2,BorderLayout.SOUTH);
-        frame.setBounds(100,100,400,180);
+        frame.setLocation(x,y);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -204,5 +249,28 @@ public class ChangeIP {
 
 }
 
+
+class dataRefresh extends Thread{
+
+    public CalendarShow currentMonth;
+
+    public dataRefresh(CalendarShow currentMonth){
+        this.currentMonth=currentMonth;
+    }
+    @Override
+    public void run(){
+        while(ChangeIP.isLive){
+
+           System.out.println(currentMonth.toTimeStammp);
+            ChangeIP.dateOK.setText(currentMonth.toTimeStammp);
+            try{
+                Thread.sleep(500);
+            }catch(InterruptedException e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+}
 //ip:127.0.0.1
 //table:127.0.0.1

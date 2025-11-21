@@ -87,6 +87,13 @@ public class ShowChooserFile extends JFrame {
 
         setVisible(true);
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
+        // 设置窗口为居中
+        Dimension screenSize=Toolkit.getDefaultToolkit().getScreenSize();
+        int x=(int)(screenSize.getWidth()/2-this.getWidth()/2);
+        int y=(int)(screenSize.getHeight()/2-this.getHeight()/2);
+
+        this.setLocation(x, y);
     }
 
     private void openFile() {
