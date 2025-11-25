@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="ChangeIPOneClick:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/ChangeIPOneClick_jar</output-path>
-    <root id="archive" name="ChangeIPOneClick.jar">
-      <element id="module-output" name="ChangeIPOneClick" />
-    </root>
-  </artifact>
-</component>
