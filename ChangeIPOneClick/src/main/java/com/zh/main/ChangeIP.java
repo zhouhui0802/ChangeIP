@@ -7,17 +7,27 @@ import java.awt.event.ActionListener;
 import java.io.*;
 import java.lang.ProcessHandle;
 import java.net.Inet4Address;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Optional;
 
 public class ChangeIP {
 
         public static String timeStamp;
+
         public static JButton dateOK;
         static CalendarShow cs;
         public static boolean isLive=true;
         public static ProcessBuilder pbFront;
         public static Process processFront;
         public static Runtime rt;
+
+        //获取文件所在地址
+        public static String selectedFile=null;
+
+
+        //默认应该是关闭进程
+        public static int onOrOff=0;
 
         public static void main(String[] args) {
 
@@ -33,13 +43,15 @@ public class ChangeIP {
 
         //专门放置  用户操作按钮  小程序的中部按钮
         Panel panel1=new Panel();
-        panel1.setLayout(new GridLayout(8,3,2,2));
+        panel1.setLayout(new GridLayout(6,3,2,2));
 
         JComboBox combo=new JComboBox();
         combo.addItem("更改文件如下");
         combo.addItem("test_fusion_seat.json");
         combo.addItem("CH_server4.json");
         combo.addItem("test_rpc_LoadDataClient.json");
+        combo.addItem("server_setting.js");
+        combo.addItem("serviceConfig.js");
 
         JLabel ipLabel=new JLabel("当前电脑IP地址");
         panel1.add(ipLabel);
@@ -88,7 +100,7 @@ public class ChangeIP {
                     // 文件地址，不管绝对相对，直接从根路径开始找，一直到jar包路径
                     String root=System.getProperty("user.dir");
                     // System.out.println(root);
-                    String readFilePath=root+"\\backend\\bin\\conf\\test_fusion_seat.json";
+                    String readFilePath=root+"\\bin\\conf\\test_fusion_seat.json";
                     System.out.println(readFilePath);
                     br=new BufferedReader(new FileReader(readFilePath));
 
@@ -145,15 +157,22 @@ public class ChangeIP {
                 //不管绝对或者相对，都从放置的文件夹中找
                 String root=System.getProperty("user.dir");
                 System.out.println("root=" +root);
-                String readAndWriteFilePath=root+"\\backend\\bin\\conf\\test_fusion_seat.json";
+                //三个后端
+                String readAndWriteFilePath=root+"\\bin\\conf\\test_fusion_seat.json";
                 readAndWriteFile(readAndWriteFilePath,pastField.getText(),ipField.getText().trim());
 
-                readAndWriteFilePath=root+"\\backend\\bin\\conf\\CH_server4.json";
+                readAndWriteFilePath=root+"\\bin\\conf\\CH_server4.json";
                 readAndWriteFile(readAndWriteFilePath,pastField.getText(),ipField.getText().trim());
 
-                readAndWriteFilePath=root+"\\backend\\bin\\conf\\test_rpc_LoadDataClient.json";
+                readAndWriteFilePath=root+"\\bin\\conf\\test_rpc_LoadDataClient.json";
                 readAndWriteFile(readAndWriteFilePath,pastField.getText(),ipField.getText().trim());
 
+                //两个前端
+                readAndWriteFilePath=root+"\\server_setting.js";
+                readAndWriteFile(readAndWriteFilePath,pastField.getText(),ipField.getText().trim());
+
+                readAndWriteFilePath=root+"\\dist\\static\\config\\serviceConfig.js";
+                readAndWriteFile(readAndWriteFilePath,pastField.getText(),ipField.getText().trim());
 
                 changeIP.setText("IP地址切换成功");
                 changeIP.setEnabled(false);
@@ -178,24 +197,71 @@ public class ChangeIP {
         panel1.add(startModify);
 
         //清楚软件的缓存
-        JLabel cacheLabel=new JLabel("清理软件缓存");
-        dateOK=new JButton("确认时间");
-        JButton cacheButton=new JButton("确认清除");
-        panel1.add(cacheLabel);
-        panel1.add(dateOK);
-        dataRefresh datarefresh;
-        dateOK.addActionListener(new ActionListener() {
+        JButton cacheLabel=new JButton("软件缓存位置");
+        cacheLabel.addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
+                JFileChooser chooser=new JFileChooser();
+                chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                int returnVal = chooser.showSaveDialog(null);
+
+                if(returnVal == JFileChooser.APPROVE_OPTION){
+                    selectedFile=chooser.getSelectedFile().getAbsolutePath();
+                    System.out.println(selectedFile);
+                }
+
+                cacheLabel.setText(selectedFile);
+            }
+        });
+        dateOK=new JButton("确认时间");
+        dataRefresh datarefresh;
+        dateOK.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
 
                     cs=new CalendarShow();
                     isLive=true;
                     dataRefresh datarefresh=new dataRefresh(cs);
                     datarefresh.start();
 
+                }
+        });
+        JButton cacheButton=new JButton("确认清除");
+        cacheButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                //获取需要的时间
+                Integer time=acquireFileTime(ChangeIP.dateOK.getText());
+
+                File file=new File(selectedFile);
+                SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+                File[] fs = file.listFiles();
+                int i=0;
+                for(File f:fs) {
+
+                    //这是获取缓存的时间
+                    String testFile=sdf.format(new Date(f.lastModified())).toString();
+                    Integer fileTimeInt=acquireFileTime(testFile);
+                    //System.out.println(fileTimeInt);
+                    if(time>fileTimeInt){
+                        f.delete();
+                    }
+
+                }
+
+                //System.out.println("确认清除");
+                cacheLabel.setText("清楚缓存位置");
+
             }
         });
+        panel1.add(cacheLabel);
+        panel1.add(dateOK);
+
+
         panel1.add(cacheButton);
         cacheButton.addActionListener(new ActionListener() {
 
@@ -207,217 +273,18 @@ public class ChangeIP {
             }
         });
 
-        //开始调用HY的bat程序  前端
-        JButton frontStart=new JButton("开启前端");
-        frontStart.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                String root=System.getProperty("user.dir");
-                String path=root+"\\front\\startex.bat";
-                //System.out.println(path);
-                try{
-
-
-                    //方案三  可以执行
-
-                    String cmd="cmd.exe /k start "+path;
-                    rt=Runtime.getRuntime();
-                    processFront=rt.exec(cmd);
-                    //System.out.println("aaaaa");
-
-
-                    //方案4  最好可以直接获取到该pid
-                    /*
-                    pbFront=new ProcessBuilder("cmd.exe","/k","start", path);
-                    processFront=pbFront.start();
-                    */
-
-
-                    //ProcessHandle handle=processFront.toHandle();
-                    //System.out.println(handle.pid());
-
-
-                }catch(Exception exception){
-                    exception.printStackTrace();
-                }
-
-            }
-        });
-        JButton hideFront = new JButton("隐藏前端CMD");
-        hideFront.addActionListener(new ActionListener() {
+        JButton  allSatrtLabel=new JButton("调试一键开启");
+        allSatrtLabel.addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-
-            }
-        });
-        JButton frontRestart=new JButton("重启前端");
-        frontRestart.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String root=System.getProperty("user.dir");
-                String path=root+"\\front\\startex.bat";
-                try{
-                    //pbFront=new ProcessBuilder("cmd.exe","/c","start", path);
-                    //processFront=pbFront.start();
-
-                    //ProcessHandle handle=processFront.toHandle();
-                    //ProcessHandle totalHandle=ProcessHandle.current();
-
-
-
-                    // 遍历 CMD 进程的所有子进程（bat 脚本内启动的程序）
-                    /*
-                    handle.children().forEach(childHandle -> {
-                        long childPid = childHandle.pid();
-                        Optional<String> childName = childHandle.info().command();
-                        System.out.println("CMD 子进程 PID：" + childPid + "，进程名：" + childName.orElse("未知"));
-                    });
-                    */
-
-
-
-                    /*
-                    Runtime rt=Runtime.getRuntime();
-                    System.out.println(handle.pid());
-                    rt.exec("cmd /c Taskkill /PID"+handle.pid()+" /T /F");
-                    */
-                    //再次重启
-                    //processFront=pbFront.start();
-
-                    /*
-                    BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-                    String s=null;
-                    if((s=stdInput.readLine())!=null){
-                        System.out.println(s);
-                        int index=s.lastIndexOf(" ");
-                        System.out.println(index);
-                        String sc=s.substring(index,s.length());
-                        System.out.println(sc);
-                        rt.exec("cmd /c Taskkill /PID"+sc+" /T /F");
-                    }
-
-                     */
-
-
-                    //Runtime rt=Runtime.getRuntime();
-                    processFront=rt.exec("cmd /c netstat -ano | findstr 3007");
-
-                    BufferedReader stdInput = new BufferedReader(new InputStreamReader(processFront.getInputStream()));
-                    String s=null;
-                    if((s=stdInput.readLine())!=null){
-                        System.out.println(s);
-                        int index=s.lastIndexOf(" ");
-                        System.out.println(index);
-                        String sc=s.substring(index,s.length());
-                        System.out.println(sc);
-                        rt.exec("cmd /c Taskkill /PID"+sc+" /T /F");
-                    }
-
-                    String cmd="cmd.exe /k start "+path;
-                    processFront=rt.exec(cmd);
-
-                }catch(Exception exception){
-                    exception.printStackTrace();
-                }
-            }
-        });
-        panel1.add(frontStart);
-        panel1.add(hideFront);
-        panel1.add(frontRestart);
-
-        //开始调用HY的bat程序  后端
-        JButton backStart=new JButton("开启后端");
-        backStart.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String root=System.getProperty("user.dir");
-                String path=root+"\\backend\\C++backend.bat";
-                //System.out.println(path);
-                try{
-
-
-                    //方案三  可以执行
-
-                    String cmd="cmd.exe /k start "+path;
-                    rt=Runtime.getRuntime();
-                    processFront=rt.exec(cmd);
-                    //System.out.println("aaaaa");
-
-
-                    //方案4  最好可以直接获取到该pid
-                    /*
-                    pbFront=new ProcessBuilder("cmd.exe","/k","start", path);
-                    processFront=pbFront.start();
-                    */
-
-
-                    //ProcessHandle handle=processFront.toHandle();
-                    //System.out.println(handle.pid());
-
-
-                }catch(Exception exception){
-                    exception.printStackTrace();
-                }
-            }
-        });
-        JButton hideBack = new JButton("隐藏后端CMD");
-        JButton backRestart=new JButton("重启后端");
-        panel1.add(backStart);
-        panel1.add(hideBack);
-        panel1.add(backRestart);
-
-        //开始调用HY的bat程序  总体调用
-        JButton allStart=new JButton("一键开启");
-        allStart.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String root=System.getProperty("user.dir");
-                String pathBack=root+"\\backend\\C++backend.bat";
-                String pathFront=root+"\\front\\startex.bat";
-                //System.out.println(path);
-                try{
-
-
-                    //方案三  可以执行
-
-                    String cmdBack="cmd.exe /k start "+pathBack;
-                    String cmdFront="cmd.exe /k start "+pathFront;
-                    rt=Runtime.getRuntime();
-                    processFront=rt.exec(cmdBack);
-                    processFront=rt.exec(cmdFront);
-                    //System.out.println("aaaaa");
-
-
-                    //方案4  最好可以直接获取到该pid
-                    /*
-                    pbFront=new ProcessBuilder("cmd.exe","/k","start", path);
-                    processFront=pbFront.start();
-                    */
-
-
-                    //ProcessHandle handle=processFront.toHandle();
-                    //System.out.println(handle.pid());
-
-
-                }catch(Exception exception){
-                    exception.printStackTrace();
-                }
-            }
-        });
-        JButton hideAll = new JButton("隐藏全部CMD");
-        JButton allRestart=new JButton("一键重启");
-        allRestart.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
+                //杀死所有进程
+                /*
                 try {
+                    //kill 后端线程
                     Runtime.getRuntime().exec("taskkill /F /IM cmd.exe");
 
+                    //找到前端进程
                     Runtime rt=Runtime.getRuntime();
                     Process proc=rt.exec("cmd /c netstat -ano | findstr 3007");
 
@@ -435,10 +302,179 @@ public class ChangeIP {
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
+
+                 */
+
+                //再次开启程序
+
+
+                String root=System.getProperty("user.dir");
+                String pathBack=root+"\\C++backend.bat";
+                String pathFront=root+"\\startex.bat";
+                String pathIntoBigData=root+"\\IntoBigdata.bat";
+                String pathMos=root+"\\mosquittostart.bat";
+                String pathHY=root+"\\HYCMD.bat";
+                //System.out.println(path);
+                try{
+
+                    //ProcessBuilder processBuilder=new ProcessBuilder();
+                    /*
+                    String pathVbs=root+"\\HY.vbs";
+                    //processBuilder.command("csript",pathVbs);
+                    //Process process=processBuilder.start();
+                    Runtime.getRuntime().exec("cmd /c /b "+pathVbs);
+                    */
+
+
+                    //方案三  可以执行   cmd /c "你的命令" >nul 2>&1
+
+                    String cmdBack="cmd.exe /k start /b "+pathBack;
+                    String cmdFront="cmd.exe /k start /b "+pathFront;  // 其中的/b是隐藏黑色的窗口
+                    String cmdIntoBigData="cmd.exe /k start /b "+pathIntoBigData;
+                    String cmdMos="cmd.exe /k start /b "+pathMos;
+
+                    String cmdHY="cmd.exe /k start /b "+pathHY;
+
+                    rt=Runtime.getRuntime();
+                    /*
+                    processFront=rt.exec(cmdMos);
+                    processFront=rt.exec(cmdBack);
+                    processFront=rt.exec(cmdFront);
+                    Thread.sleep(10000);
+                    processFront=rt.exec(cmdIntoBigData);
+                    */
+                    processFront=rt.exec(cmdHY);
+
+
+                }catch(Exception exception){
+                    exception.printStackTrace();
+                }
             }
         });
+/*        if(onOrOff==0){
+            allSatrtLabel.setEnabled(false);
+        }*/
+
+        //开始调用HY的bat程序  总体调用
+        JButton allStart=new JButton("一键关闭");
+        allStart.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    //kill 后端线程
+                    Runtime.getRuntime().exec("taskkill /f /im cmd.exe");
+                    Runtime.getRuntime().exec("taskkill /f /im test_loader.exe");
+                    Runtime.getRuntime().exec("taskkill /f /im mosquitto.exe");
+                    Runtime.getRuntime().exec("taskkill /f /im mediamtx.exe");
+
+                    //找到前端进程
+                    Runtime rt=Runtime.getRuntime();
+                    Process proc=rt.exec("cmd /c netstat -ano | findstr 3007");
+
+                    BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+                    String s=null;
+                    if((s=stdInput.readLine())!=null){
+                        System.out.println(s);
+                        int index=s.lastIndexOf(" ");
+                        System.out.println(index);
+                        String sc=s.substring(index,s.length());
+                        System.out.println(sc);
+                        rt.exec("Taskkill /PID"+sc+" /T /F");
+
+                    }
+
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+
+
+            }
+        });
+
+        JButton allRestart=new JButton("一键重启");
+        allRestart.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                /*
+                //杀死所有进程
+                try {
+                    //kill 后端线程
+                    Runtime.getRuntime().exec("taskkill /F /IM cmd.exe");
+
+                    //找到前端进程
+                    Runtime rt=Runtime.getRuntime();
+                    Process proc=rt.exec("cmd /c netstat -ano | findstr 3007");
+
+                    BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+                    String s=null;
+                    if((s=stdInput.readLine())!=null){
+                        System.out.println(s);
+                        int index=s.lastIndexOf(" ");
+                        System.out.println(index);
+                        String sc=s.substring(index,s.length());
+                        System.out.println(sc);
+                        rt.exec("Taskkill /PID"+sc+" /T /F");
+                    }
+
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+
+
+                 */
+                //再次开启程序
+
+
+                String root=System.getProperty("user.dir");
+                String pathBack=root+"\\C++backend.bat";
+                String pathFront=root+"\\startex.bat";
+                String pathIntoBigData=root+"\\IntoBigdata.bat";
+                String pathMos=root+"\\mosquittostart.bat";
+                String pathHY=root+"\\HY.bat";
+                String pathVBS=root+"\\HY.vbs";
+                //System.out.println(path);
+                try{
+
+                    //ProcessBuilder processBuilder=new ProcessBuilder();
+                    /*
+                    String pathVbs=root+"\\HY.vbs";
+                    //processBuilder.command("csript",pathVbs);
+                    //Process process=processBuilder.start();
+                    Runtime.getRuntime().exec("cmd /c /b "+pathVbs);
+                    */
+
+
+                    //方案三  可以执行
+
+                    String cmdBack="cmd.exe /k start /b "+pathBack;
+                    String cmdFront="cmd.exe /k start /b "+pathFront;  // 其中的/b是隐藏黑色的窗口
+                    String cmdIntoBigData="cmd.exe /k start /b "+pathIntoBigData;
+                    String cmdMos="cmd.exe /k start /b "+pathMos;
+
+                    String cmdHY="cmd.exe /k start /b "+pathHY;
+
+                    //rt=Runtime.getRuntime();
+                    /*
+                    processFront=rt.exec(cmdMos);
+                    processFront=rt.exec(cmdBack);
+                    processFront=rt.exec(cmdFront);
+                    Thread.sleep(10000);
+                    processFront=rt.exec(cmdIntoBigData);
+                    */
+                    //processFront=rt.exec(cmdHY);
+                    Runtime.getRuntime().exec("cscript //NoLogo " + pathVBS);
+
+
+                }catch(Exception exception){
+                    exception.printStackTrace();
+                }
+            }
+        });
+        panel1.add(allSatrtLabel);
         panel1.add(allStart);
-        panel1.add(hideAll);
         panel1.add(allRestart);
 
 
@@ -490,6 +526,16 @@ public class ChangeIP {
         }
     }
 
+    public static Integer acquireFileTime(String timeText){
+
+            StringBuilder sb=new StringBuilder();
+            for(String splitStrings: timeText.split("-")) {
+                //System.out.println(splitStrings);
+                sb.append(splitStrings);
+            }
+
+            return Integer.parseInt(sb.toString());
+    }
 
 }
 
@@ -505,7 +551,7 @@ class dataRefresh extends Thread{
     public void run(){
         while(ChangeIP.isLive){
 
-           System.out.println(currentMonth.toTimeStammp);
+            //System.out.println(currentMonth.toTimeStammp);
             ChangeIP.dateOK.setText(currentMonth.toTimeStammp);
             try{
                 Thread.sleep(500);

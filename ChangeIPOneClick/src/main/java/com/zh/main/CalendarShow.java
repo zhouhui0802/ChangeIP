@@ -118,7 +118,7 @@ public class CalendarShow extends JFrame implements ActionListener {
                     }else{
                         day.setBackground(Color.green);
                     }*/
-                    timeStamp=(String)(dateFormat.format(date).subSequence(0,4)+"--"+dateFormat.format(date).substring(5)+"--"+day.getText());
+                    timeStamp=(String)(dateFormat.format(date).subSequence(0,4)+"-"+dateFormat.format(date).substring(5)+"-"+day.getText());
                     selectTime.setText("获取需要的时间"+timeStamp);
                     toTimeStammp=timeStamp;
                 }
