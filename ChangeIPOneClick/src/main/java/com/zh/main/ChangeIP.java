@@ -14,38 +14,48 @@ import java.util.Optional;
 // 开始处理线程，做好做到不断地刷新
 public class ChangeIP {
 
-        public static String timeStamp;
 
         public static JButton dateOK;
         static CalendarShow cs;
+
+        // 判断日历的线程，随时获取点击的日历的数据
         public static boolean isLive=true;
         public static ProcessBuilder pbFront;
+
+        //用于处理启动bat跟vbs的脚本
         public static Process processFront;
         public static Runtime rt;
 
         //获取文件所在地址
         public static String selectedFile=null;
 
+        //需要实时绘画
+        public static JFrame frame;
 
-        //默认应该是关闭进程
-        public static int onOrOff=0;
+        public static JButton startModify;
+
+        public static int linkSignal=5; //监控数据信号
 
         public static void main(String[] args) {
 
-
-
         //开头的标题
-        JFrame frame=new JFrame("IP地址修改");
+        frame=new JFrame("鸿影操作小程序");
+
 
         //小程序的北部标题
         Panel panel=new Panel();
-        panel.add(new JLabel("一键更改配置IP地址"));
+        panel.add(new JLabel("鸿影操作界面"));
         frame.add(panel,BorderLayout.NORTH);
+        //  ------ 上面的代码基本不用动
 
-        //专门放置  用户操作按钮  小程序的中部按钮
+
+
+        //专门放置  用户操作按钮  小程序的中部布置
         Panel panel1=new Panel();
+        //设置Center的布局
         panel1.setLayout(new GridLayout(6,3,2,2));
 
+        //第一行，处理获取IP地址
         JComboBox combo=new JComboBox();
         combo.addItem("更改文件如下");
         combo.addItem("mediamtx.yml");
@@ -62,7 +72,7 @@ public class ChangeIP {
         JTextField ipField=new JTextField(20);
         panel1.add(ipField);
 
-        //获取当前的IP地址
+
         JButton ipButton=new JButton("获取IP");
         panel1.add(ipButton);
         ipButton.addActionListener(new ActionListener() {
@@ -79,8 +89,9 @@ public class ChangeIP {
 
             }
         });
+        // 第一行功能结束
 
-        // 输入原来的IP地址
+        //第二行，输入原IP的地址
         JButton changeIP=new JButton("一键更改");
         changeIP.setEnabled(false);
 
@@ -102,13 +113,12 @@ public class ChangeIP {
                     //修改为绝对路径或者相对路径
                     // 文件地址，不管绝对相对，直接从根路径开始找，一直到jar包路径
                     String root=System.getProperty("user.dir");
-                    // System.out.println(root);
                     String readFilePath=root+"\\bin\\conf\\test_fusion_seat.json";
                     System.out.println(readFilePath);
                     br=new BufferedReader(new FileReader(readFilePath));
 
                     String line;
-                    //System.out.println("数值是："+pastField.getText());
+
                     if(pastField.getText().equals("")){
                         JOptionPane.showMessageDialog(null,"输入IP地址为空","标题",JOptionPane.ERROR_MESSAGE);
                     }else{
@@ -145,8 +155,10 @@ public class ChangeIP {
                 }
             }
         });
+        //第二行功能结束
 
-        //显示修改IP地址的文件列表
+
+        //第三行，显示修改IP的文件列表，并且修改
         JLabel showFile=new JLabel("更改文件列表");
         panel1.add(showFile);
         panel1.add(combo);
@@ -159,7 +171,7 @@ public class ChangeIP {
                 //调用文件
                 //不管绝对或者相对，都从放置的文件夹中找
                 String root=System.getProperty("user.dir");
-                System.out.println("root=" +root);
+                //System.out.println("root=" +root);
                 //三个后端
                 String readAndWriteFilePath=root+"\\bin\\conf\\test_fusion_seat.json";
                 readAndWriteFile(readAndWriteFilePath,pastField.getText(),ipField.getText().trim());
@@ -188,9 +200,10 @@ public class ChangeIP {
                 changeIP.setEnabled(false);
             }
         });
+        //第三行功能结束
 
 
-        //寻找需要修改的文件
+        //第四行 寻找需要修改的文件
         JLabel showNeedFile=new JLabel("需要修改的文件");
         JButton modifyNeedFile=new JButton("寻找该文件");
 
@@ -201,12 +214,14 @@ public class ChangeIP {
                 new ShowChooserFile();
             }
         });
-        JButton startModify=new JButton("开始修改文件");
+        startModify=new JButton("监控数据链接");   //这个按钮暂时还没用
+        startModify.setBackground(Color.RED);
         panel1.add(showNeedFile);
         panel1.add(modifyNeedFile);
         panel1.add(startModify);
+        //第四行功能结束
 
-        //清楚软件的缓存
+        //第五行软件功能，清除软件缓存
         JButton cacheLabel=new JButton("软件缓存位置");
         cacheLabel.addActionListener(new ActionListener() {
 
@@ -230,7 +245,6 @@ public class ChangeIP {
 
                 @Override
                 public void actionPerformed(ActionEvent e) {
-
                     cs=new CalendarShow();
                     isLive=true;
                     dataRefresh datarefresh=new dataRefresh(cs);
@@ -247,10 +261,7 @@ public class ChangeIP {
                 //获取需要的时间
                 Integer time=acquireFileTime(ChangeIP.dateOK.getText());
 
-
                 File file=new File(selectedFile);
-
-
 
                 deleteDir(file,time);
 
@@ -261,8 +272,6 @@ public class ChangeIP {
         });
         panel1.add(cacheLabel);
         panel1.add(dateOK);
-
-
         panel1.add(cacheButton);
         cacheButton.addActionListener(new ActionListener() {
 
@@ -273,7 +282,9 @@ public class ChangeIP {
                 isLive=false;
             }
         });
+        //第五行功能结束
 
+        //第六行软件功能，一键重启以及CMD开启
         JButton  allSatrtLabel=new JButton("调试一键开启");
         allSatrtLabel.addActionListener(new ActionListener() {
 
@@ -356,7 +367,7 @@ public class ChangeIP {
             allSatrtLabel.setEnabled(false);
         }*/
 
-        //开始调用HY的bat程序  总体调用
+
         JButton allStart=new JButton("一键关闭");
         allStart.addActionListener(new ActionListener() {
 
@@ -391,7 +402,7 @@ public class ChangeIP {
 
 
             }
-        });
+        });   //关闭程序，杀死进程
 
         JButton allRestart=new JButton("一键重启");
         allRestart.addActionListener(new ActionListener() {
@@ -477,33 +488,37 @@ public class ChangeIP {
         panel1.add(allSatrtLabel);
         panel1.add(allStart);
         panel1.add(allRestart);
-
+        //第六行功能结束
 
 
         //最终的中部界面
         frame.add(panel1,BorderLayout.CENTER);
+
 
         // 加入南部按钮
         Panel panel2=new Panel();
         panel2.setLayout(new GridLayout(1,2,2,2));
         panel2.add(new JButton("确定"));
         panel2.add(new JButton("取消"));
+        frame.add(panel2,BorderLayout.SOUTH);
 
         // 设置窗口为居中
-        frame.setSize(400,260);
-        Dimension screenSize=Toolkit.getDefaultToolkit().getScreenSize();
-        int x=(int)(screenSize.getWidth()/2-frame.getWidth()/2);
-        int y=(int)(screenSize.getHeight()/2-frame.getHeight()/2);
+        setFrameCenter(frame,400,260);
 
         //关闭小程序窗口
-
-        frame.add(panel2,BorderLayout.SOUTH);
-        frame.setLocation(x,y);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        //开启刷新线程
+        linkBigDataMonitor linkBigDataMonitor=new linkBigDataMonitor();
+        linkBigDataMonitor.start();
+
     }
 
+    //之后会将所有的方法放到专门的utils包下面
+
+
+    //文件读取以及修改
     public static void readAndWriteFile(String fileName,String oldText,String newText){
         BufferedReader br=null;
         BufferedWriter writer=null;
@@ -527,6 +542,7 @@ public class ChangeIP {
         }
     }
 
+    //获取文件的时间，并且转换为Integer，并且比较
     public static Integer acquireFileTime(String timeText){
 
             StringBuilder sb=new StringBuilder();
@@ -543,17 +559,16 @@ public class ChangeIP {
             return Integer.parseInt(sb.toString());
     }
 
+    //删除文件以及文件夹
     public static void deleteDir(File files,Integer appTime) {
         //获取File对象中的所有文件，并将其放在数组中
         //File files=new File(filesTemp);
         File[] listFiles = files.listFiles();
         SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
 
-
         //循环遍历数组
         for (File file: listFiles) {
             //如果是目录文件，则递归调用删除方法
-
 
             if (file.isDirectory()) {
                 deleteDir(file,appTime);
@@ -562,29 +577,32 @@ public class ChangeIP {
                 }
             }
 
-
             //这是获取缓存的时间
             String testFile=sdf.format(new Date(file.lastModified())).toString();
             Integer fileTimeInt=acquireFileTime(testFile);
-            //System.out.println(fileTimeInt);
-            //System.out.println("这是获取APP上的时间time: "+time);
-            //System.out.println("这是获取文件的时间: "+fileTimeInt);
+
             if(appTime>fileTimeInt){
                 //System.out.println(f.getName());
                 file.delete();
             }
 
-
-
         }
         //删除文件夹内所有文件后，再删除文件夹
         //files.delete();
-
     }
 
+    //设置窗体居中
+    public static void setFrameCenter(JFrame frame,int x,int y){
+
+        frame.setSize(x,y);
+        Dimension screenSize=Toolkit.getDefaultToolkit().getScreenSize();
+        int locationX=(int)(screenSize.getWidth()/2-frame.getWidth()/2);
+        int locationY=(int)(screenSize.getHeight()/2-frame.getHeight()/2);
+        frame.setLocation(locationX,locationY);
+    }
 }
 
-
+// 这个线程启动，获取日历组件的时间列表
 class dataRefresh extends Thread{
 
     public CalendarShow currentMonth;
@@ -605,7 +623,31 @@ class dataRefresh extends Thread{
             }
         }
     }
-
 }
-//ip:127.0.0.1
-//table:127.0.0.1
+
+class linkBigDataMonitor extends Thread{
+
+    @Override
+    public void run(){
+        boolean flag=false;
+        while(true){
+            if(ChangeIP.linkSignal%5==0&&flag==true){
+                ChangeIP.startModify.setBackground(Color.BLUE);
+                flag=false;
+            }else{
+                ChangeIP.startModify.setBackground(Color.RED);
+                flag=true;
+            }
+
+
+            try{
+                Thread.sleep(5000);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            ChangeIP.linkSignal+=5;
+            ChangeIP.frame.repaint();
+
+        }
+    }
+}
