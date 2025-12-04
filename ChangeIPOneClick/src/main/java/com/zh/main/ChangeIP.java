@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
 
+// 开始处理线程，做好做到不断地刷新
 public class ChangeIP {
 
         public static String timeStamp;
@@ -47,9 +48,11 @@ public class ChangeIP {
 
         JComboBox combo=new JComboBox();
         combo.addItem("更改文件如下");
+        combo.addItem("mediamtx.yml");
         combo.addItem("test_fusion_seat.json");
         combo.addItem("CH_server4.json");
         combo.addItem("test_rpc_LoadDataClient.json");
+        combo.addItem("MapTilesServer.json");
         combo.addItem("server_setting.js");
         combo.addItem("serviceConfig.js");
 
@@ -161,6 +164,9 @@ public class ChangeIP {
                 String readAndWriteFilePath=root+"\\bin\\conf\\test_fusion_seat.json";
                 readAndWriteFile(readAndWriteFilePath,pastField.getText(),ipField.getText().trim());
 
+                readAndWriteFilePath=root+"\\bin\\conf\\MapTilesServer.json";
+                readAndWriteFile(readAndWriteFilePath,pastField.getText(),ipField.getText().trim());
+
                 readAndWriteFilePath=root+"\\bin\\conf\\CH_server4.json";
                 readAndWriteFile(readAndWriteFilePath,pastField.getText(),ipField.getText().trim());
 
@@ -172,6 +178,10 @@ public class ChangeIP {
                 readAndWriteFile(readAndWriteFilePath,pastField.getText(),ipField.getText().trim());
 
                 readAndWriteFilePath=root+"\\dist\\static\\config\\serviceConfig.js";
+                readAndWriteFile(readAndWriteFilePath,pastField.getText(),ipField.getText().trim());
+
+                //还有一个推流
+                readAndWriteFilePath=root+"\\mediamtx_v1.9.3_windows_amd64\\mediamtx.yml";
                 readAndWriteFile(readAndWriteFilePath,pastField.getText(),ipField.getText().trim());
 
                 changeIP.setText("IP地址切换成功");
@@ -237,21 +247,12 @@ public class ChangeIP {
                 //获取需要的时间
                 Integer time=acquireFileTime(ChangeIP.dateOK.getText());
 
+
                 File file=new File(selectedFile);
-                SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
-                File[] fs = file.listFiles();
-                int i=0;
-                for(File f:fs) {
 
-                    //这是获取缓存的时间
-                    String testFile=sdf.format(new Date(f.lastModified())).toString();
-                    Integer fileTimeInt=acquireFileTime(testFile);
-                    //System.out.println(fileTimeInt);
-                    if(time>fileTimeInt){
-                        f.delete();
-                    }
 
-                }
+
+                deleteDir(file,time);
 
                 //System.out.println("确认清除");
                 cacheLabel.setText("清楚缓存位置");
@@ -531,10 +532,54 @@ public class ChangeIP {
             StringBuilder sb=new StringBuilder();
             for(String splitStrings: timeText.split("-")) {
                 //System.out.println(splitStrings);
+                Integer temp=Integer.parseInt(splitStrings);
+                if(temp<10){
+                    splitStrings="0"+temp;
+                    System.out.println(splitStrings);
+                }
                 sb.append(splitStrings);
             }
 
             return Integer.parseInt(sb.toString());
+    }
+
+    public static void deleteDir(File files,Integer appTime) {
+        //获取File对象中的所有文件，并将其放在数组中
+        //File files=new File(filesTemp);
+        File[] listFiles = files.listFiles();
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+
+
+        //循环遍历数组
+        for (File file: listFiles) {
+            //如果是目录文件，则递归调用删除方法
+
+
+            if (file.isDirectory()) {
+                deleteDir(file,appTime);
+                if(file.length()==0){
+                    file.delete();
+                }
+            }
+
+
+            //这是获取缓存的时间
+            String testFile=sdf.format(new Date(file.lastModified())).toString();
+            Integer fileTimeInt=acquireFileTime(testFile);
+            //System.out.println(fileTimeInt);
+            //System.out.println("这是获取APP上的时间time: "+time);
+            //System.out.println("这是获取文件的时间: "+fileTimeInt);
+            if(appTime>fileTimeInt){
+                //System.out.println(f.getName());
+                file.delete();
+            }
+
+
+
+        }
+        //删除文件夹内所有文件后，再删除文件夹
+        //files.delete();
+
     }
 
 }
