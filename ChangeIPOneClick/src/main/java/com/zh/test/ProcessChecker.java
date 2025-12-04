@@ -2,6 +2,7 @@ package com.zh.test;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 
 public class ProcessChecker {
 
@@ -13,14 +14,16 @@ public class ProcessChecker {
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
             String line;
+            HashMap<Integer, Integer> map = new HashMap<>();
+
             while((line=reader.readLine())!=null){
                 if(line.contains(processName)){
-                    System.out.println(line);
-                    //return true;
+                    String[] parts = line.trim().split("\\s+");
+                    int pid=Integer.parseInt(parts[1]);
+                    System.out.println(pid);
+
+                    map.put(pid, 0);
                 }
-
-
-
             }
         }catch(Exception e){
             e.printStackTrace();

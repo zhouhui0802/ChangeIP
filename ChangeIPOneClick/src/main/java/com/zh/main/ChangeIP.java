@@ -9,6 +9,7 @@ import java.lang.ProcessHandle;
 import java.net.Inet4Address;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Optional;
 
 // 开始处理线程，做好做到不断地刷新
@@ -34,7 +35,7 @@ public class ChangeIP {
 
         public static JButton startModify;
 
-        public static int linkSignal=5; //监控数据信号
+        public static int singalNumber=0;
 
         public static void main(String[] args) {
 
@@ -216,6 +217,41 @@ public class ChangeIP {
         });
         startModify=new JButton("监控数据链接");   //这个按钮暂时还没用
         startModify.setBackground(Color.RED);
+        startModify.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String root=System.getProperty("user.dir");
+                String pathVBSData=root+"\\HYData.vbs";
+                //System.out.println(path);
+                try{
+
+                    //ProcessBuilder processBuilder=new ProcessBuilder();
+                    /*
+                    String pathVbs=root+"\\HY.vbs";
+                    //processBuilder.command("csript",pathVbs);
+                    //Process process=processBuilder.start();
+                    Runtime.getRuntime().exec("cmd /c /b "+pathVbs);
+                    */
+
+
+                    //rt=Runtime.getRuntime();
+                    /*
+                    processFront=rt.exec(cmdMos);
+                    processFront=rt.exec(cmdBack);
+                    processFront=rt.exec(cmdFront);
+                    Thread.sleep(10000);
+                    processFront=rt.exec(cmdIntoBigData);
+                    */
+                    //processFront=rt.exec(cmdHY);
+                    Runtime.getRuntime().exec("cscript //NoLogo " + pathVBSData);
+
+
+                }catch(Exception exception){
+                    exception.printStackTrace();
+                }
+
+            }
+        });
         panel1.add(showNeedFile);
         panel1.add(modifyNeedFile);
         panel1.add(startModify);
@@ -600,6 +636,48 @@ public class ChangeIP {
         int locationY=(int)(screenSize.getHeight()/2-frame.getHeight()/2);
         frame.setLocation(locationX,locationY);
     }
+
+    //判断进程是否存货
+    public static int isProcessRunning(String processName) {
+
+        HashMap<Integer,Integer> singalMap=new HashMap();
+        try{
+            Process process = Runtime.getRuntime().exec(getCommand(processName));
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+            String line;
+
+            while((line=reader.readLine())!=null){
+                if(line.contains(processName)){
+                    //System.out.println(line);
+                    String[] parts = line.trim().split("\\s+");
+                    int pid=Integer.parseInt(parts[1]);
+                    //return true;
+                    singalMap.put(pid,1);
+
+                }
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        singalNumber=singalMap.size();
+        return singalNumber;
+
+    }
+
+    private static String getCommand(String processName){
+        String os=System.getProperty("os.name").toLowerCase();
+
+        if(os.contains("win")){
+            return "tasklist";
+        }else if(os.contains("nix") || os.contains("nux") || os.contains("mac")){
+            return "ps -ef";
+        }
+
+        throw new UnsupportedOperationException("Unsupported operating system");
+    }
 }
 
 // 这个线程启动，获取日历组件的时间列表
@@ -629,23 +707,21 @@ class linkBigDataMonitor extends Thread{
 
     @Override
     public void run(){
-        boolean flag=false;
+        //boolean flag=false;
         while(true){
-            if(ChangeIP.linkSignal%5==0&&flag==true){
-                ChangeIP.startModify.setBackground(Color.BLUE);
-                flag=false;
+            if(ChangeIP.isProcessRunning("test_loader")>3){
+                ChangeIP.startModify.setBackground(Color.GRAY);
+                ChangeIP.startModify.setText("大数据链接正常");
             }else{
                 ChangeIP.startModify.setBackground(Color.RED);
-                flag=true;
+                ChangeIP.startModify.setText("大数据还未链接");
             }
 
-
             try{
-                Thread.sleep(5000);
+                Thread.sleep(500);
             }catch (Exception e){
                 e.printStackTrace();
             }
-            ChangeIP.linkSignal+=5;
             ChangeIP.frame.repaint();
 
         }
