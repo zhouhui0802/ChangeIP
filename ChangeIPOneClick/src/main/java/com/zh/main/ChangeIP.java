@@ -715,6 +715,42 @@ class linkBigDataMonitor extends Thread{
             }else{
                 ChangeIP.startModify.setBackground(Color.RED);
                 ChangeIP.startModify.setText("大数据还未链接");
+
+                String root=System.getProperty("user.dir");
+                String pathIntoBigData=root+"\\IntoBigdata.bat";
+                try{
+
+                    //ProcessBuilder processBuilder=new ProcessBuilder();
+                    /*
+                    String pathVbs=root+"\\HY.vbs";
+                    //processBuilder.command("csript",pathVbs);
+                    //Process process=processBuilder.start();
+                    Runtime.getRuntime().exec("cmd /c /b "+pathVbs);
+                    */
+
+
+                    //方案三  可以执行
+
+                    String cmdIntoBigData="cmd.exe /k start /b "+pathIntoBigData;
+
+
+                    //rt=Runtime.getRuntime();
+                    /*
+                    processFront=rt.exec(cmdMos);
+                    processFront=rt.exec(cmdBack);
+                    processFront=rt.exec(cmdFront);
+                    Thread.sleep(10000);
+                    processFront=rt.exec(cmdIntoBigData);
+                    */
+                    //processFront=rt.exec(cmdHY);
+                    Runtime.getRuntime().exec(cmdIntoBigData);
+
+
+                }catch(Exception exception){
+                    exception.printStackTrace();
+                }
+
+
             }
 
             try{
