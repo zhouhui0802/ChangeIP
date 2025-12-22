@@ -225,23 +225,7 @@ public class ChangeIP {
                 //System.out.println(path);
                 try{
 
-                    //ProcessBuilder processBuilder=new ProcessBuilder();
-                    /*
-                    String pathVbs=root+"\\HY.vbs";
-                    //processBuilder.command("csript",pathVbs);
-                    //Process process=processBuilder.start();
-                    Runtime.getRuntime().exec("cmd /c /b "+pathVbs);
-                    */
 
-
-                    //rt=Runtime.getRuntime();
-                    /*
-                    processFront=rt.exec(cmdMos);
-                    processFront=rt.exec(cmdBack);
-                    processFront=rt.exec(cmdFront);
-                    Thread.sleep(10000);
-                    processFront=rt.exec(cmdIntoBigData);
-                    */
                     //processFront=rt.exec(cmdHY);
                     Runtime.getRuntime().exec("cscript //NoLogo " + pathVBSData);
 
@@ -326,34 +310,7 @@ public class ChangeIP {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                //杀死所有进程
-                /*
-                try {
-                    //kill 后端线程
-                    Runtime.getRuntime().exec("taskkill /F /IM cmd.exe");
 
-                    //找到前端进程
-                    Runtime rt=Runtime.getRuntime();
-                    Process proc=rt.exec("cmd /c netstat -ano | findstr 3007");
-
-                    BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-                    String s=null;
-                    if((s=stdInput.readLine())!=null){
-                        System.out.println(s);
-                        int index=s.lastIndexOf(" ");
-                        System.out.println(index);
-                        String sc=s.substring(index,s.length());
-                        System.out.println(sc);
-                        rt.exec("Taskkill /PID"+sc+" /T /F");
-                    }
-
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
-
-                 */
-
-                //再次开启程序
 
 
                 String root=System.getProperty("user.dir");
@@ -365,13 +322,6 @@ public class ChangeIP {
                 //System.out.println(path);
                 try{
 
-                    //ProcessBuilder processBuilder=new ProcessBuilder();
-                    /*
-                    String pathVbs=root+"\\HY.vbs";
-                    //processBuilder.command("csript",pathVbs);
-                    //Process process=processBuilder.start();
-                    Runtime.getRuntime().exec("cmd /c /b "+pathVbs);
-                    */
 
 
                     //方案三  可以执行   cmd /c "你的命令" >nul 2>&1
@@ -384,13 +334,7 @@ public class ChangeIP {
                     String cmdHY="cmd.exe /k start /b "+pathHY;
 
                     rt=Runtime.getRuntime();
-                    /*
-                    processFront=rt.exec(cmdMos);
-                    processFront=rt.exec(cmdBack);
-                    processFront=rt.exec(cmdFront);
-                    Thread.sleep(10000);
-                    processFront=rt.exec(cmdIntoBigData);
-                    */
+
                     processFront=rt.exec(cmdHY);
 
 
@@ -399,9 +343,7 @@ public class ChangeIP {
                 }
             }
         });
-/*        if(onOrOff==0){
-            allSatrtLabel.setEnabled(false);
-        }*/
+
 
 
         JButton allStart=new JButton("一键关闭");
@@ -415,6 +357,7 @@ public class ChangeIP {
                     Runtime.getRuntime().exec("taskkill /f /im test_loader.exe");
                     Runtime.getRuntime().exec("taskkill /f /im mosquitto.exe");
                     Runtime.getRuntime().exec("taskkill /f /im mediamtx.exe");
+                    Runtime.getRuntime().exec("taskkill /f /im information_fusion_system.exe"); //杀掉前端进程
 
                     //找到前端进程
                     Runtime rt=Runtime.getRuntime();
@@ -446,33 +389,6 @@ public class ChangeIP {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                /*
-                //杀死所有进程
-                try {
-                    //kill 后端线程
-                    Runtime.getRuntime().exec("taskkill /F /IM cmd.exe");
-
-                    //找到前端进程
-                    Runtime rt=Runtime.getRuntime();
-                    Process proc=rt.exec("cmd /c netstat -ano | findstr 3007");
-
-                    BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-                    String s=null;
-                    if((s=stdInput.readLine())!=null){
-                        System.out.println(s);
-                        int index=s.lastIndexOf(" ");
-                        System.out.println(index);
-                        String sc=s.substring(index,s.length());
-                        System.out.println(sc);
-                        rt.exec("Taskkill /PID"+sc+" /T /F");
-                    }
-
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
-
-
-                 */
                 //再次开启程序
 
 
@@ -486,13 +402,7 @@ public class ChangeIP {
                 //System.out.println(path);
                 try{
 
-                    //ProcessBuilder processBuilder=new ProcessBuilder();
-                    /*
-                    String pathVbs=root+"\\HY.vbs";
-                    //processBuilder.command("csript",pathVbs);
-                    //Process process=processBuilder.start();
-                    Runtime.getRuntime().exec("cmd /c /b "+pathVbs);
-                    */
+
 
 
                     //方案三  可以执行
@@ -716,35 +626,18 @@ class linkBigDataMonitor extends Thread{
                 ChangeIP.startModify.setBackground(Color.RED);
                 ChangeIP.startModify.setText("大数据还未链接");
 
+
                 String root=System.getProperty("user.dir");
                 String pathIntoBigData=root+"\\IntoBigdata.bat";
                 try{
 
-                    //ProcessBuilder processBuilder=new ProcessBuilder();
-                    /*
-                    String pathVbs=root+"\\HY.vbs";
-                    //processBuilder.command("csript",pathVbs);
-                    //Process process=processBuilder.start();
-                    Runtime.getRuntime().exec("cmd /c /b "+pathVbs);
-                    */
-
 
                     //方案三  可以执行
-
+                    /*
                     String cmdIntoBigData="cmd.exe /k start /b "+pathIntoBigData;
 
-
-                    //rt=Runtime.getRuntime();
-                    /*
-                    processFront=rt.exec(cmdMos);
-                    processFront=rt.exec(cmdBack);
-                    processFront=rt.exec(cmdFront);
-                    Thread.sleep(10000);
-                    processFront=rt.exec(cmdIntoBigData);
-                    */
-                    //processFront=rt.exec(cmdHY);
                     Runtime.getRuntime().exec(cmdIntoBigData);
-
+                    */
 
                 }catch(Exception exception){
                     exception.printStackTrace();
