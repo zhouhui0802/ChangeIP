@@ -56,7 +56,7 @@ public class ChangeIP {
         //专门放置  用户操作按钮  小程序的中部布置
         Panel panel1=new Panel();
         //设置Center的布局
-        panel1.setLayout(new GridLayout(6,3,2,2));
+        panel1.setLayout(new GridLayout(5,3,2,2));
 
         //第一行，处理获取IP地址
         JComboBox combo=new JComboBox();
@@ -96,9 +96,9 @@ public class ChangeIP {
 
         //第二行，输入原IP的地址
         JButton changeIP=new JButton("One-click change");
-        changeIP.setEnabled(false);
+        //changeIP.setEnabled(false);
 
-
+        /*   这个第二行军帽不需要
         JLabel pastLabel=new JLabel("Enter original IP");
         panel1.add(pastLabel);
 
@@ -159,7 +159,7 @@ public class ChangeIP {
             }
         });
         //第二行功能结束
-
+        */
 
         //第三行，显示修改IP的文件列表，并且修改
         JLabel showFile=new JLabel("Change file list");
@@ -171,33 +171,34 @@ public class ChangeIP {
             @Override
             public void actionPerformed(ActionEvent e) {
 
+                String pastFieldId="127.0.0.1";
                 //调用文件
                 //不管绝对或者相对，都从放置的文件夹中找
                 String root=System.getProperty("user.dir");
                 //System.out.println("root=" +root);
                 //三个后端
                 String readAndWriteFilePath=root+"\\bin\\conf\\test_fusion_seat.json";
-                readAndWriteFile(readAndWriteFilePath,pastField.getText(),ipField.getText().trim());
+                readAndWriteFile(readAndWriteFilePath,pastFieldId,ipField.getText().trim());
 
                 readAndWriteFilePath=root+"\\bin\\conf\\MapTilesServer.json";
-                readAndWriteFile(readAndWriteFilePath,pastField.getText(),ipField.getText().trim());
+                readAndWriteFile(readAndWriteFilePath,pastFieldId,ipField.getText().trim());
 
                 readAndWriteFilePath=root+"\\bin\\conf\\CH_server4.json";
-                readAndWriteFile(readAndWriteFilePath,pastField.getText(),ipField.getText().trim());
+                readAndWriteFile(readAndWriteFilePath,pastFieldId,ipField.getText().trim());
 
                 readAndWriteFilePath=root+"\\bin\\conf\\test_rpc_LoadDataClient.json";
-                readAndWriteFile(readAndWriteFilePath,pastField.getText(),ipField.getText().trim());
+                readAndWriteFile(readAndWriteFilePath,pastFieldId,ipField.getText().trim());
 
                 //两个前端
                 readAndWriteFilePath=root+"\\server_setting.js";
-                readAndWriteFile(readAndWriteFilePath,pastField.getText(),ipField.getText().trim());
+                readAndWriteFile(readAndWriteFilePath,pastFieldId,ipField.getText().trim());
 
                 readAndWriteFilePath=root+"\\dist\\static\\config\\serviceConfig.js";
-                readAndWriteFile(readAndWriteFilePath,pastField.getText(),ipField.getText().trim());
+                readAndWriteFile(readAndWriteFilePath,pastFieldId,ipField.getText().trim());
 
                 //还有一个推流
                 readAndWriteFilePath=root+"\\mediamtx_v1.9.3_windows_amd64\\mediamtx.yml";
-                readAndWriteFile(readAndWriteFilePath,pastField.getText(),ipField.getText().trim());
+                readAndWriteFile(readAndWriteFilePath,pastFieldId,ipField.getText().trim());
 
                 changeIP.setText("IP successfully switched");
                 changeIP.setEnabled(false);
@@ -451,7 +452,7 @@ public class ChangeIP {
         frame.add(panel2,BorderLayout.SOUTH);
 
         // 设置窗口为居中
-        setFrameCenter(frame,400,260);
+        setFrameCenter(frame,480,240);
 
         //关闭小程序窗口
         frame.setVisible(true);
