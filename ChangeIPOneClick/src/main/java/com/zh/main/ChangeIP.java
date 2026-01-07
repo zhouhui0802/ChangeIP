@@ -37,15 +37,17 @@ public class ChangeIP {
 
         public static int singalNumber=0;
 
+        public static int SingalMonitor=0;
+
         public static void main(String[] args) {
 
         //开头的标题
-        frame=new JFrame("鸿影操作小程序");
+        frame=new JFrame("HY Operation Mini Program");
 
 
         //小程序的北部标题
         Panel panel=new Panel();
-        panel.add(new JLabel("鸿影操作界面"));
+        panel.add(new JLabel("User Interface"));
         frame.add(panel,BorderLayout.NORTH);
         //  ------ 上面的代码基本不用动
 
@@ -58,7 +60,7 @@ public class ChangeIP {
 
         //第一行，处理获取IP地址
         JComboBox combo=new JComboBox();
-        combo.addItem("更改文件如下");
+        combo.addItem("files modified as follows");
         combo.addItem("mediamtx.yml");
         combo.addItem("test_fusion_seat.json");
         combo.addItem("CH_server4.json");
@@ -67,14 +69,14 @@ public class ChangeIP {
         combo.addItem("server_setting.js");
         combo.addItem("serviceConfig.js");
 
-        JLabel ipLabel=new JLabel("当前电脑IP地址");
+        JLabel ipLabel=new JLabel("Current computer IP");
         panel1.add(ipLabel);
 
         JTextField ipField=new JTextField(20);
         panel1.add(ipField);
 
 
-        JButton ipButton=new JButton("获取IP");
+        JButton ipButton=new JButton("Get IP");
         panel1.add(ipButton);
         ipButton.addActionListener(new ActionListener() {
             @Override
@@ -93,17 +95,17 @@ public class ChangeIP {
         // 第一行功能结束
 
         //第二行，输入原IP的地址
-        JButton changeIP=new JButton("一键更改");
+        JButton changeIP=new JButton("One-click change");
         changeIP.setEnabled(false);
 
 
-        JLabel pastLabel=new JLabel("输入原电脑IP");
+        JLabel pastLabel=new JLabel("Enter original IP");
         panel1.add(pastLabel);
 
         JTextField pastField=new JTextField(20);
         panel1.add(pastField);
 
-        JButton confirmButton=new JButton("确认原IP");
+        JButton confirmButton=new JButton("Confirm IP");
         panel1.add(confirmButton);
         confirmButton.addActionListener(new ActionListener() {
 
@@ -121,13 +123,13 @@ public class ChangeIP {
                     String line;
 
                     if(pastField.getText().equals("")){
-                        JOptionPane.showMessageDialog(null,"输入IP地址为空","标题",JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null,"IP is empty","title",JOptionPane.ERROR_MESSAGE);
                     }else{
                         int temp=0;
                         while((line=br.readLine())!=null){
                             if(line.contains(pastField.getText())){
                                 // System.out.println(line);
-                                confirmButton.setText("原IP存在");
+                                confirmButton.setText("Original IP exists");
                                 confirmButton.setEnabled(false);
 
                                 changeIP.setEnabled(true);
@@ -137,7 +139,7 @@ public class ChangeIP {
                         }
 
                         if(temp==0){
-                            JOptionPane.showMessageDialog(null,"输入IP地址不存在，请重新输入","标题",JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(null,"The IP does not exist, please re-enter.","title",JOptionPane.ERROR_MESSAGE);
                         }
 
                     }
@@ -160,7 +162,7 @@ public class ChangeIP {
 
 
         //第三行，显示修改IP的文件列表，并且修改
-        JLabel showFile=new JLabel("更改文件列表");
+        JLabel showFile=new JLabel("Change file list");
         panel1.add(showFile);
         panel1.add(combo);
         panel1.add(changeIP);
@@ -197,7 +199,7 @@ public class ChangeIP {
                 readAndWriteFilePath=root+"\\mediamtx_v1.9.3_windows_amd64\\mediamtx.yml";
                 readAndWriteFile(readAndWriteFilePath,pastField.getText(),ipField.getText().trim());
 
-                changeIP.setText("IP地址切换成功");
+                changeIP.setText("IP successfully switched");
                 changeIP.setEnabled(false);
             }
         });
@@ -205,8 +207,8 @@ public class ChangeIP {
 
 
         //第四行 寻找需要修改的文件
-        JLabel showNeedFile=new JLabel("需要修改的文件");
-        JButton modifyNeedFile=new JButton("寻找该文件");
+        JLabel showNeedFile=new JLabel("Files need modified");
+        JButton modifyNeedFile=new JButton("Find the file");
 
         modifyNeedFile.addActionListener(new ActionListener() {
 
@@ -215,7 +217,7 @@ public class ChangeIP {
                 new ShowChooserFile();
             }
         });
-        startModify=new JButton("监控数据链接");   //这个按钮暂时还没用
+        startModify=new JButton("Monitor link");   //这个按钮暂时还没用
         startModify.setBackground(Color.RED);
         startModify.addActionListener(new ActionListener() {
             @Override
@@ -242,7 +244,7 @@ public class ChangeIP {
         //第四行功能结束
 
         //第五行软件功能，清除软件缓存
-        JButton cacheLabel=new JButton("软件缓存位置");
+        JButton cacheLabel=new JButton("cache location");
         cacheLabel.addActionListener(new ActionListener() {
 
             @Override
@@ -259,7 +261,7 @@ public class ChangeIP {
                 cacheLabel.setText(selectedFile);
             }
         });
-        dateOK=new JButton("确认时间");
+        dateOK=new JButton("Confirm time");
         dataRefresh datarefresh;
         dateOK.addActionListener(new ActionListener() {
 
@@ -272,7 +274,7 @@ public class ChangeIP {
 
                 }
         });
-        JButton cacheButton=new JButton("确认清除");
+        JButton cacheButton=new JButton("Confirm Clear");
         cacheButton.addActionListener(new ActionListener() {
 
             @Override
@@ -286,7 +288,7 @@ public class ChangeIP {
                 deleteDir(file,time);
 
                 //System.out.println("确认清除");
-                cacheLabel.setText("清楚缓存位置");
+                cacheLabel.setText("Clear cache location");
 
             }
         });
@@ -305,7 +307,7 @@ public class ChangeIP {
         //第五行功能结束
 
         //第六行软件功能，一键重启以及CMD开启
-        JButton  allSatrtLabel=new JButton("调试一键开启");
+        JButton  allSatrtLabel=new JButton("Debug click");
         allSatrtLabel.addActionListener(new ActionListener() {
 
             @Override
@@ -346,7 +348,7 @@ public class ChangeIP {
 
 
 
-        JButton allStart=new JButton("一键关闭");
+        JButton allStart=new JButton("One-click shutdown");
         allStart.addActionListener(new ActionListener() {
 
             @Override
@@ -383,7 +385,7 @@ public class ChangeIP {
             }
         });   //关闭程序，杀死进程
 
-        JButton allRestart=new JButton("一键重启");
+        JButton allRestart=new JButton("One-click restart");
         allRestart.addActionListener(new ActionListener() {
 
             @Override
@@ -444,8 +446,8 @@ public class ChangeIP {
         // 加入南部按钮
         Panel panel2=new Panel();
         panel2.setLayout(new GridLayout(1,2,2,2));
-        panel2.add(new JButton("确定"));
-        panel2.add(new JButton("取消"));
+        panel2.add(new JButton("OK"));
+        panel2.add(new JButton("Cancel"));
         frame.add(panel2,BorderLayout.SOUTH);
 
         // 设置窗口为居中
@@ -619,29 +621,41 @@ class linkBigDataMonitor extends Thread{
     public void run(){
         //boolean flag=false;
         while(true){
-            if(ChangeIP.isProcessRunning("test_loader")>3){
+            if(ChangeIP.isProcessRunning("test_loader")>=4){
+
+
+                ChangeIP.SingalMonitor=ChangeIP.isProcessRunning("test_loader")-3;
+
+
                 ChangeIP.startModify.setBackground(Color.GRAY);
-                ChangeIP.startModify.setText("大数据链接正常");
+                ChangeIP.startModify.setText( ChangeIP.SingalMonitor+" 路数据接入");
             }else{
+
+
+                ChangeIP.SingalMonitor=0;
                 ChangeIP.startModify.setBackground(Color.RED);
-                ChangeIP.startModify.setText("大数据还未链接");
+                ChangeIP.startModify.setText(ChangeIP.SingalMonitor+" 路数据接入");
 
 
+                /*
                 String root=System.getProperty("user.dir");
                 String pathIntoBigData=root+"\\IntoBigdata.bat";
                 try{
 
 
                     //方案三  可以执行
-                    /*
+
                     String cmdIntoBigData="cmd.exe /k start /b "+pathIntoBigData;
 
                     Runtime.getRuntime().exec(cmdIntoBigData);
-                    */
+
 
                 }catch(Exception exception){
                     exception.printStackTrace();
                 }
+
+                *
+                 */
 
 
             }
